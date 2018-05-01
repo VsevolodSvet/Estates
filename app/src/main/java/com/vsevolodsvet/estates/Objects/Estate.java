@@ -94,6 +94,61 @@ public class Estate {
     public long getId() {
         return id;
     }
+    public String getAdress() {
+        return adress;
+    }
+
+    public Float getX_coord() {
+        return x_coord;
+    }
+
+    public Float getY_coord() {
+        return y_coord;
+    }
+
+    public Float getPrive_m() {
+        return prive_m;
+    }
+
+    public Float getPrive_r() {
+        return prive_r;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public Integer getRooms() {
+        return rooms;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public Integer getLevel_amount() {
+        return level_amount;
+    }
+
+    public Float getS_live() {
+        return s_live;
+    }
+
+    public Float getS_all() {
+        return s_all;
+    }
+
+    public Float getS_r() {
+        return s_r;
+    }
+
+    public Integer getBalcony() {
+        return balcony;
+    }
+
+    public Date getYear() {
+        return year;
+    }
 
     public HashMap<String, Object> getAll() {
         HashMap<String, Object> EstateMap = new HashMap<String, Object>();
