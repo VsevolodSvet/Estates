@@ -1,11 +1,20 @@
 package com.vsevolodsvet.estates.Objects;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.vsevolodsvet.estates.DB.SQLiteHelper;
+import com.vsevolodsvet.estates.MainActivity;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
 public class Estate {
+
+    // Блок параметров объекта
+    //region
     private long id;
     private String adress;
     private Float x_coord;
@@ -21,6 +30,7 @@ public class Estate {
     private Float s_r;
     private Integer balcony;
     private Date year;
+    //endregion
 
     // Блок методов задания значений параметров
     //region
@@ -174,8 +184,17 @@ public class Estate {
     }
     // endregion
 
-    public Estate(long id) {
-        this.id = id;
+    // Для создания объекта
+    public Estate() {
+        SQLiteDatabase db = MainActivity.getDBHelper().getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT MAX(_id) FROM " + SQLiteHelper.TABLE_ESTATES, null);
+        id = c.getInt(0); // надо проверить, с 0 или 1 считаются столбцы
+        id++;
+        // создаем новый объект Estate с id на 1 больше максимального в БД (чтобы гарантировать его уникальность)
+    }
+
+    public Estate(String s){
+
     }
 
     @Override

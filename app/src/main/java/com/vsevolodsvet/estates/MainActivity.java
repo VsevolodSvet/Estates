@@ -6,7 +6,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.vsevolodsvet.estates.DB.SQLiteHelper;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static SQLiteHelper dbHelper;
+
+    public static SQLiteHelper getDBHelper() {
+        return dbHelper;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        dbHelper = new SQLiteHelper(this);
     }
 
     @Override
