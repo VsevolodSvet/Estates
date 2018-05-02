@@ -5,7 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import org.apache.poi.ss.usermodel.Cell;
+import com.vsevolodsvet.estates.Objects.Estate;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,15 +41,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "estates.db";
     private static final int DATABASE_VERSION = 1;
-
-    private static final String[] Fields = {
-            //region
-            COLUMN_ID, ADRESS, X_COORD, Y_COORD,
-            PRICE_M, PRICE_R, REGION, ROOMS,
-            LEVEL, LEVEL_AMOUNT, S_LIVE, S_ALL,
-            S_R, BALCONY, YEAR
-            //endregion
-    };
     //endregion
 
     // Скрипт создания таблицы
@@ -77,52 +69,52 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     // производит добавление в БД содержимое файла XLS
-    //region
     public void AddXLSData (Workbook workbook) {
+        //region
+        // создаем массив для вытащенных из БД объектов недвижимости
+        ArrayList Estates = new ArrayList();
+
         // выбираем страницу (первую и единственную) документа с данными
         Sheet sheet = workbook.getSheetAt(0);
+
         // берем данные начиная со второй строки (первая строка - описание полей)
         /** Обязателен верный порядок столбцов таблицы **/
-        ArrayList Estates = new ArrayList();
         for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
             Row row = sheet.getRow(i);
-            //читаем столбцы
-            for (short j = 0; j < Fields.length; j++) {
-
-            }
+            // заполняем параметры в известном порядке
+            //region
+            // это ОГРОМНЫЙ костыль
+            long id = Long.valueOf(row.getCell(0).getStringCellValue());
+            String adress = row.getCell(1).getStringCellValue();
+            Float x_coord = Float.valueOf(row.getCell(2).getStringCellValue());
+            Float y_coord = Float.valueOf(row.getCell(3).getStringCellValue());
+            Float prive_m = Float.valueOf(row.getCell(4).getStringCellValue());
+            Float prive_r = Float.valueOf(row.getCell(5).getStringCellValue());
+            String region = row.getCell(6).getStringCellValue();
+            Integer rooms = Integer.valueOf(row.getCell(7).getStringCellValue());
+            Integer level = Integer.valueOf(row.getCell(8).getStringCellValue());
+            Integer level_amount = Integer.valueOf(row.getCell(9).getStringCellValue());
+            Float s_live = Float.valueOf(row.getCell(10).getStringCellValue());
+            Float s_all = Float.valueOf(row.getCell(11).getStringCellValue());
+            Float s_r = Float.valueOf(row.getCell(12).getStringCellValue());
+            Integer balcony = Integer.valueOf(row.getCell(13).getStringCellValue());
+            String year = row.getCell(14).getStringCellValue();
+            //endregion
+            Estates.add(new Estate(id, adress, x_coord, y_coord, prive_m, prive_r,
+                region, rooms, level, level_amount, s_live, s_all, s_r, balcony, year));
         }
-        //читаем первое поле (отсчет полей идет с нуля) т.е. по сути читаем второе
-        Row row = sheet.getRow(1);
-        //читаем столбцы
-        Cell name = row.getCell(0);
-        Cell age = row.getCell(1);
+
+        // добавляем объекты из заполненного массива в БД, при совпадающем id запись ЗАМЕНЯЕТСЯ
+        for (Object estate : Estates) {
+            estate = (Estate) estate;
+
+        }
+        //endregion
     }
-    //endregion
 
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE_ESTATES);
-        /**
-        // добавление в множество всех параметров класса
-        //region
-        fields.add("id");
-        fields.add(COLUMN_ID);
-        fields.add(ADRESS);
-        fields.add(X_COORD);
-        fields.add(Y_COORD);
-        fields.add(PRICE_M);
-        fields.add(PRICE_R);
-        fields.add(REGION);
-        fields.add(ROOMS);
-        fields.add(LEVEL);
-        fields.add(LEVEL_AMOUNT);
-        fields.add(S_LIVE);
-        fields.add(S_ALL);
-        fields.add(S_R);
-        fields.add(BALCONY);
-        fields.add(YEAR);
-        //endregion
-         **/
     }
 
     @Override

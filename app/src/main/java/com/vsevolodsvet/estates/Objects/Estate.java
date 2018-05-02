@@ -193,8 +193,32 @@ public class Estate {
         // создаем новый объект Estate с id на 1 больше максимального в БД (чтобы гарантировать его уникальность)
     }
 
-    public Estate(String s){
-
+    // Для создания объекта со всеми параметрами
+    public Estate(long id, String adress, Float x_coord, Float y_coord, Float prive_m, Float prive_r,
+                  String region, Integer rooms, Integer level, Integer level_amount, Float s_live,
+                  Float s_all, Float s_r, Integer balcony, String year) {
+        // все сеттеры
+        //region
+        this.setId(id);
+        this.setAdress(adress);
+        this.setX_coord(x_coord);
+        this.setY_coord(y_coord);
+        this.setPriveM(prive_m);
+        this.setPriveR(prive_r);
+        this.setRegion(region);
+        this.setRooms(rooms);
+        this.setLevel(level);
+        this.setLevelAmount(level_amount);
+        this.setS_Live(s_live);
+        this.setS_All(s_all);
+        this.setS_R(s_r);
+        this.setBalcony(balcony);
+        try {
+            this.setYear(year);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //endregion
     }
 
     @Override
