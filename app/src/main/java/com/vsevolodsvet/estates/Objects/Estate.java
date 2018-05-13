@@ -19,8 +19,8 @@ public class Estate {
     private String adress;
     private Float x_coord;
     private Float y_coord;
-    private Float prive_m;
-    private Float prive_r;
+    private Float price_m;
+    private Float price_r;
     private String region;
     private Integer rooms;
     private Integer level;
@@ -51,12 +51,12 @@ public class Estate {
         this.y_coord = y_coord;
     }
 
-    public void setPriveM(Float prive_m) {
-        this.prive_m = prive_m;
+    public void setPriceM(Float price_m) {
+        this.price_m = price_m;
     }
 
-    public void setPriveR(Float prive_r) {
-        this.prive_r = prive_r;
+    public void setPriceR(Float price_r) {
+        this.price_r = price_r;
     }
 
     public void setRegion(String region) {
@@ -76,15 +76,15 @@ public class Estate {
     }
 
     public void setS_Live(Float s_live) {
-        this.prive_r = prive_r;
+        this.s_live = s_live;
     }
 
     public void setS_All(Float s_all) {
-        this.prive_r = prive_r;
+        this.s_all = s_all;
     }
 
     public void setS_R(Float s_r) {
-        this.prive_r = prive_r;
+        this.s_r = s_r;
     }
 
     public void setBalcony(Integer balcony) {
@@ -116,12 +116,12 @@ public class Estate {
         return y_coord;
     }
 
-    public Float getPrive_m() {
-        return prive_m;
+    public Float getPrice_m() {
+        return price_m;
     }
 
-    public Float getPrive_r() {
-        return prive_r;
+    public Float getPrice_r() {
+        return price_r;
     }
 
     public String getRegion() {
@@ -168,8 +168,8 @@ public class Estate {
         if (!String.valueOf(this.adress).equals(null)) EstateMap.put("adress", this.adress);
         if (!Float.valueOf(this.x_coord).equals(null)) EstateMap.put("x_coord", this.x_coord);
         if (!Float.valueOf(this.y_coord).equals(null)) EstateMap.put("y_coord", this.y_coord);
-        if (!Float.valueOf(this.prive_m).equals(null)) EstateMap.put("prive_m", this.prive_m);
-        if (!Float.valueOf(this.prive_r).equals(null)) EstateMap.put("prive_r", this.prive_r);
+        if (!Float.valueOf(this.price_m).equals(null)) EstateMap.put("prive_m", this.price_m);
+        if (!Float.valueOf(this.price_r).equals(null)) EstateMap.put("prive_r", this.price_r);
         if (!String.valueOf(this.region).equals(null)) EstateMap.put("region", this.region);
         if (!Integer.valueOf(this.rooms).equals(null)) EstateMap.put("rooms", this.rooms);
         if (!Integer.valueOf(this.level).equals(null)) EstateMap.put("level", this.level);
@@ -194,7 +194,7 @@ public class Estate {
     }
 
     // Для создания объекта со всеми параметрами
-    public Estate(long id, String adress, Float x_coord, Float y_coord, Float prive_m, Float prive_r,
+    public Estate(long id, String adress, Float x_coord, Float y_coord, Float price_m, Float price_r,
                   String region, Integer rooms, Integer level, Integer level_amount, Float s_live,
                   Float s_all, Float s_r, Integer balcony, String year) {
         // все сеттеры
@@ -203,8 +203,8 @@ public class Estate {
         this.setAdress(adress);
         this.setX_coord(x_coord);
         this.setY_coord(y_coord);
-        this.setPriveM(prive_m);
-        this.setPriveR(prive_r);
+        this.setPriceM(price_m);
+        this.setPriceR(price_r);
         this.setRegion(region);
         this.setRooms(rooms);
         this.setLevel(level);

@@ -1,6 +1,7 @@
 package com.vsevolodsvet.estates.DB;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -69,7 +70,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     // производит добавление в БД содержимое файла XLS
-    public void AddXLSData (Workbook workbook) {
+    public void AddXLSData (Workbook workbook, SQLiteDatabase database) {
         //region
         // создаем массив для вытащенных из БД объектов недвижимости
         ArrayList Estates = new ArrayList();
@@ -106,8 +107,55 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         // добавляем объекты из заполненного массива в БД, при совпадающем id запись ЗАМЕНЯЕТСЯ
         for (Object estate : Estates) {
-            estate = (Estate) estate;
-
+            //region
+            // проверяем на совпадение id добавляемого объекта с id в БД
+            Estate est = (Estate) estate;
+            long currentId = est.getId();
+            Cursor c = database.query(TABLE_ESTATES, null, COLUMN_ID+"='"+currentId+"'",
+                    null, null, null, null);
+            if (c.getCount() != 0){
+                // обновляем запись с нужным id
+                //region
+                database.execSQL("UPDATE "+TABLE_ESTATES+" SET "
+                        +ADRESS+" = "+est.getAdress()
+                        +X_COORD+" = "+est.getX_coord()
+                        +Y_COORD+" = "+est.getY_coord()
+                        +PRICE_M+" = "+est.getPrice_m()
+                        +PRICE_R+" = "+est.getPrice_r()
+                        +REGION+" = "+est.getRegion()
+                        +ROOMS+" = "+est.getRooms()
+                        +LEVEL+" = "+est.getLevel()
+                        +LEVEL_AMOUNT+" = "+est.getLevel_amount()
+                        +S_LIVE+" = "+est.getS_live()
+                        +S_ALL+" = "+est.getS_all()
+                        +S_R+" = "+est.getS_r()
+                        +BALCONY+" = "+est.getBalcony()
+                        +YEAR+" = "+est.getYear()
+                        +" WHERE "+COLUMN_ID+" = "+currentId);
+                //endregion
+            } else {
+                // либо создаем новую
+                //region
+                database.execSQL("INSERT INTO "+TABLE_ESTATES+" VALUES ("
+                        +currentId+", "
+                        +"'"+est.getAdress()+"', "
+                        +est.getX_coord()+", "
+                        +est.getY_coord()+", "
+                        +est.getPrice_m()+", "
+                        +est.getPrice_r()+", "
+                        +"'"+est.getRegion()+"', "
+                        +est.getRooms()+", "
+                        +est.getLevel()+", "
+                        +est.getLevel_amount()+", "
+                        +est.getS_live()+", "
+                        +est.getS_all()+", "
+                        +est.getS_r()+", "
+                        +est.getBalcony()+", "
+                        +"'"+est.getYear()+"'"
+                        +")");
+                //endregion
+            }
+            //endregion
         }
         //endregion
     }
