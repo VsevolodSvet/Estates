@@ -1,4 +1,13 @@
 <resources>
+
     <string name="app_name">Estates</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_xls_download">Загрузить XLS</string>
+    <string name="action_show_statistics">Показать статистику</string>
+
+    <!-- listview header -->
+    <string name="lv_number">№</string>
+    <string name="lv_region">Район</string>
+    <string name="lv_address">Адрес</string>
+    <string name="lv_level">Этаж</string>
+
 </resources>

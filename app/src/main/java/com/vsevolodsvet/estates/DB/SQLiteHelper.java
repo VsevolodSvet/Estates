@@ -65,6 +65,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + " text not null);"; // т.к. в SQLite нету типа даты. Сохранять в виде YYYY-MM-DD HH:MM:SS.SSS
     //endregion
 
+    // Скрипт заполнения таблицы (для теста)
+    //region
+    private static final String DATABASE_FILL_ESTATES = "create table "
+            + TABLE_ESTATES + "(" + COLUMN_ID
+            + " integer primary key autoincrement, " + ADRESS
+            + " text, " + X_COORD
+            + " real, " + Y_COORD
+            + " real, " + PRICE_M
+            + " real, " + PRICE_R
+            + " real not null, " + REGION
+            + " text not null, " + ROOMS
+            + " integer not null, " + LEVEL
+            + " integer not null, " + LEVEL_AMOUNT
+            + " integer not null, " + S_LIVE
+            + " real not null, " + S_ALL
+            + " real not null, " + S_R
+            + " real not null, " + BALCONY
+            + " integer not null, " + YEAR // можно как количество, а можно просто наличие/отсутствие (в SQLite нету Boolean)
+            + " text not null);"; // т.к. в SQLite нету типа даты. Сохранять в виде YYYY-MM-DD HH:MM:SS.SSS
+    //endregion
+
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -85,12 +106,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             // заполняем параметры в известном порядке
             //region
             // это ОГРОМНЫЙ костыль
-            long id = Long.valueOf(row.getCell(0).getStringCellValue());
+            long id = (long) row.getCell(0).getNumericCellValue();
             String adress = row.getCell(1).getStringCellValue();
             Float x_coord = Float.valueOf(row.getCell(2).getStringCellValue());
             Float y_coord = Float.valueOf(row.getCell(3).getStringCellValue());
-            Float prive_m = Float.valueOf(row.getCell(4).getStringCellValue());
-            Float prive_r = Float.valueOf(row.getCell(5).getStringCellValue());
+            Float price_m = Float.valueOf(row.getCell(4).getStringCellValue());
+            Float price_r = Float.valueOf(row.getCell(5).getStringCellValue());
             String region = row.getCell(6).getStringCellValue();
             Integer rooms = Integer.valueOf(row.getCell(7).getStringCellValue());
             Integer level = Integer.valueOf(row.getCell(8).getStringCellValue());
@@ -101,7 +122,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             Integer balcony = Integer.valueOf(row.getCell(13).getStringCellValue());
             String year = row.getCell(14).getStringCellValue();
             //endregion
-            Estates.add(new Estate(id, adress, x_coord, y_coord, prive_m, prive_r,
+            Estates.add(new Estate(id, adress, x_coord, y_coord, price_m, price_r,
                 region, rooms, level, level_amount, s_live, s_all, s_r, balcony, year));
         }
 

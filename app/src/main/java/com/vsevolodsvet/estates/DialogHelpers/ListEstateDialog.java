@@ -1,4 +1,4 @@
-package com.vsevolodsvet.estates.Helpers;
+package com.vsevolodsvet.estates.DialogHelpers;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

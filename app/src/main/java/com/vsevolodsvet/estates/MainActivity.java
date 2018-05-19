@@ -8,10 +8,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.vsevolodsvet.estates.DB.SQLiteHelper;
-import com.vsevolodsvet.estates.Helpers.ListEstateDialog;
+import com.vsevolodsvet.estates.DialogHelpers.ListEstateDialog;
+import com.vsevolodsvet.estates.DialogHelpers.OpenFileDialog;
 import com.vsevolodsvet.estates.Objects.Estate;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +38,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         dbHelper = new SQLiteHelper(this);
 
+        View view = getLayoutInflater().inflate(R.layout.list_header_task, null);
+
         ListView listView = findViewById(R.id.mainTaskList);
+        listView.addHeaderView(view);
         listView.setOnItemClickListener(mListViewItemClickListener);
-
-
     }
 
     @Override
@@ -46,17 +54,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (item.getItemId() == R.id.action_xls_download) {
+            OpenFileDialog fileDialog = new OpenFileDialog(this);
+            fileDialog.setFolderIcon(this.getResources().getDrawable(R.drawable.ic_folder_open_black_48dp))
+            .setFileIcon(this.getResources().getDrawable(R.drawable.ic_attachment_black_48dp))
+            .setAccessDeniedMessage("Нет доступа!")
+            // в качестве фильтра задаем регулярное выражение для отбора файлов только с расширениями .xls и .xlsx
+            .setFilter(".*\\.xlsx?")
+            .setOpenDialogListener(new OpenFileDialog.OpenDialogListener() {
+                @Override
+                public void OnSelectedFile(String filePath) {
+                    if (!filePath.isEmpty()) {
+                        try {
+                            HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(filePath));
+                            dbHelper.AddXLSData(workbook, dbHelper.getWritableDatabase());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(), filePath, Toast.LENGTH_LONG);
+                    }
+                }
+            })
+            .show();
         }
 
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_show_statistics) {
+
+        }
+
+        return true;
     }
 
     private AdapterView.OnItemClickListener mListViewItemClickListener = new AdapterView.OnItemClickListener() {
@@ -74,10 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putLong("estateId", currentEstateId);
                 bundle.putInt("position", position);
-                if (true){
-
-                }
-
                 ListEstateDialog dialog = new ListEstateDialog();
                 dialog.setArguments(bundle);
                 dialog.show(getSupportFragmentManager(), dialog.getClass()
