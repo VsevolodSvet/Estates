@@ -54,9 +54,7 @@ public class MainActivity extends AppCompatActivity {
         ListView listView = findViewById(R.id.mainTaskList);
 
         MainActivityEstateAdapter adapter = new MainActivityEstateAdapter(this, estates);
-
         listView.setAdapter(adapter);
-
         adapter.notifyDataSetChanged();
     }
 
@@ -84,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(filePath));
                             String message = dbHelper.AddXLSData(workbook, dbHelper.getWritableDatabase());
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -92,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             })
             .show();
+            List<Estate> estates = dbHelper.getEstates();
+            ListView listView = findViewById(R.id.mainTaskList);
+
+            MainActivityEstateAdapter adapter = new MainActivityEstateAdapter(this, estates);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
 
         if (item.getItemId() == R.id.action_show_statistics) {
@@ -106,16 +110,29 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapter, View view,
                                 int position, long currentEstateId) {
-
             if (position != 0) {
-
                 selectedPosition = position;
-
                 Estate estate = (Estate) adapter.getItemAtPosition(position);
-
                 Bundle bundle = new Bundle();
-                bundle.putLong("estateId", currentEstateId);
+                // задание параметров bundle для конструктора диалогового окна
+                //region
+                bundle.putLong("estateId", estate.getId());
+                bundle.putString("estateAdress", estate.getAdress());
+                bundle.putDouble("estateXcoord", estate.getX_coord());
+                bundle.putDouble("estateYcoord", estate.getY_coord());
+                bundle.putDouble("estatePriceM", estate.getPrice_m());
+                bundle.putDouble("estatePriceR", estate.getPrice_r());
+                bundle.putString("estateRegion", estate.getRegion());
+                bundle.putInt("estateRooms", estate.getRooms());
+                bundle.putInt("estateLevel", estate.getLevel());
+                bundle.putInt("estateLevelAmount", estate.getLevel_amount());
+                bundle.putDouble("estateSLive", estate.getS_live());
+                bundle.putDouble("estateSAll", estate.getS_all());
+                bundle.putDouble("estateSR", estate.getS_r());
+                bundle.putInt("estateBalcony", estate.getBalcony());
+                bundle.putString("estateYear", estate.getYear().toString());
                 bundle.putInt("position", position);
+                //endregion
                 ListEstateDialog dialog = new ListEstateDialog();
                 dialog.setArguments(bundle);
                 dialog.show(getSupportFragmentManager(), dialog.getClass()
