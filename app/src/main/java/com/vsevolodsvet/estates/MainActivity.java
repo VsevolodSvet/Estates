@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.vsevolodsvet.estates.Adapters.MainActivityEstateAdapter;
 import com.vsevolodsvet.estates.DB.SQLiteHelper;
 import com.vsevolodsvet.estates.DialogHelpers.ListEstateDialog;
 import com.vsevolodsvet.estates.DialogHelpers.OpenFileDialog;
@@ -19,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +48,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        List<Estate> estates = dbHelper.getEstates();
+        ListView listView = findViewById(R.id.mainTaskList);
+
+        MainActivityEstateAdapter adapter = new MainActivityEstateAdapter(this, estates);
+
+        listView.setAdapter(adapter);
+
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -68,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
                     if (!filePath.isEmpty()) {
                         try {
                             HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(filePath));
-                            dbHelper.AddXLSData(workbook, dbHelper.getWritableDatabase());
+                            String message = dbHelper.AddXLSData(workbook, dbHelper.getWritableDatabase());
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(getApplicationContext(), filePath, Toast.LENGTH_LONG);
                     }
                 }
             })

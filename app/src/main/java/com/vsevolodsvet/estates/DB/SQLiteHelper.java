@@ -8,11 +8,14 @@ import android.util.Log;
 
 import com.vsevolodsvet.estates.Objects.Estate;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Vsevolod on 15.04.2018.
@@ -42,6 +45,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "estates.db";
     private static final int DATABASE_VERSION = 1;
+
+    public SQLiteDatabase mCurrentDB;
     //endregion
 
     // Скрипт создания таблицы
@@ -86,13 +91,50 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + " text not null);"; // т.к. в SQLite нету типа даты. Сохранять в виде YYYY-MM-DD HH:MM:SS.SSS
     //endregion
 
+    public List<Estate> getEstates() {
+        return getEstates(null);
+    }
+
+    public synchronized List<Estate> getEstates(String where) {
+        String columns[] = Estate.getFieldNames();
+
+        List<Estate> tasks = new ArrayList<Estate>();
+
+        Cursor cursor = this.getWritableDatabase().query(TABLE_ESTATES, columns, where,
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Estate est = Estate.cursorToEstate(cursor);
+                tasks.add(est);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return tasks;
+
+    }
+
+    public Estate getEstate(int estateId) {
+        List<Estate> estates = getEstates("id=" + estateId);
+
+        if (estates.size() > 0) {
+            return estates.get(0);
+        }
+
+        return null;
+    }
+
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     // производит добавление в БД содержимое файла XLS
-    public void AddXLSData (Workbook workbook, SQLiteDatabase database) {
+    public String AddXLSData (Workbook workbook, SQLiteDatabase database) {
         //region
+        int added = 0;
+        int updated = 0;
         // создаем массив для вытащенных из БД объектов недвижимости
         ArrayList Estates = new ArrayList();
 
@@ -106,21 +148,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             // заполняем параметры в известном порядке
             //region
             // это ОГРОМНЫЙ костыль
-            long id = (long) row.getCell(0).getNumericCellValue();
-            String adress = row.getCell(1).getStringCellValue();
-            Float x_coord = Float.valueOf(row.getCell(2).getStringCellValue());
-            Float y_coord = Float.valueOf(row.getCell(3).getStringCellValue());
-            Float price_m = Float.valueOf(row.getCell(4).getStringCellValue());
-            Float price_r = Float.valueOf(row.getCell(5).getStringCellValue());
-            String region = row.getCell(6).getStringCellValue();
-            Integer rooms = Integer.valueOf(row.getCell(7).getStringCellValue());
-            Integer level = Integer.valueOf(row.getCell(8).getStringCellValue());
-            Integer level_amount = Integer.valueOf(row.getCell(9).getStringCellValue());
-            Float s_live = Float.valueOf(row.getCell(10).getStringCellValue());
-            Float s_all = Float.valueOf(row.getCell(11).getStringCellValue());
-            Float s_r = Float.valueOf(row.getCell(12).getStringCellValue());
-            Integer balcony = Integer.valueOf(row.getCell(13).getStringCellValue());
-            String year = row.getCell(14).getStringCellValue();
+            long id = (long) Double.parseDouble(getXLSCellValueAsString(row.getCell(0)));
+            String adress = getXLSCellValueAsString(row.getCell(1));
+            Double x_coord = Double.parseDouble(getXLSCellValueAsString(row.getCell(2)));
+            Double y_coord = Double.parseDouble(getXLSCellValueAsString(row.getCell(3)));
+            Double price_m = Double.parseDouble(getXLSCellValueAsString(row.getCell(4)));
+            Double price_r = Double.parseDouble(getXLSCellValueAsString(row.getCell(5)));
+            String region = getXLSCellValueAsString(row.getCell(6));
+            Integer rooms = (int) Double.parseDouble(getXLSCellValueAsString(row.getCell(7)));
+            Integer level = (int) Double.parseDouble(getXLSCellValueAsString(row.getCell(8)));
+            Integer level_amount = (int) Double.parseDouble(getXLSCellValueAsString(row.getCell(9)));
+            Double s_live = Double.parseDouble(getXLSCellValueAsString(row.getCell(10)));
+            Double s_all = Double.parseDouble(getXLSCellValueAsString(row.getCell(11)));
+            Double s_r = Double.parseDouble(getXLSCellValueAsString(row.getCell(12)));
+            Integer balcony = (int) Double.parseDouble(getXLSCellValueAsString(row.getCell(13)));
+            String year = getXLSCellValueAsString(row.getCell(14));
             //endregion
             Estates.add(new Estate(id, adress, x_coord, y_coord, price_m, price_r,
                 region, rooms, level, level_amount, s_live, s_all, s_r, balcony, year));
@@ -137,21 +179,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             if (c.getCount() != 0){
                 // обновляем запись с нужным id
                 //region
+                updated++;
                 database.execSQL("UPDATE "+TABLE_ESTATES+" SET "
-                        +ADRESS+" = "+est.getAdress()
-                        +X_COORD+" = "+est.getX_coord()
-                        +Y_COORD+" = "+est.getY_coord()
-                        +PRICE_M+" = "+est.getPrice_m()
-                        +PRICE_R+" = "+est.getPrice_r()
-                        +REGION+" = "+est.getRegion()
-                        +ROOMS+" = "+est.getRooms()
-                        +LEVEL+" = "+est.getLevel()
-                        +LEVEL_AMOUNT+" = "+est.getLevel_amount()
-                        +S_LIVE+" = "+est.getS_live()
-                        +S_ALL+" = "+est.getS_all()
-                        +S_R+" = "+est.getS_r()
-                        +BALCONY+" = "+est.getBalcony()
-                        +YEAR+" = "+est.getYear()
+                        +ADRESS+" = '"+est.getAdress()+"', "
+                        +X_COORD+" = "+est.getX_coord()+", "
+                        +Y_COORD+" = "+est.getY_coord()+", "
+                        +PRICE_M+" = "+est.getPrice_m()+", "
+                        +PRICE_R+" = "+est.getPrice_r()+", "
+                        +REGION+" = '"+est.getRegion()+"', "
+                        +ROOMS+" = "+est.getRooms()+", "
+                        +LEVEL+" = "+est.getLevel()+", "
+                        +LEVEL_AMOUNT+" = "+est.getLevel_amount()+", "
+                        +S_LIVE+" = "+est.getS_live()+", "
+                        +S_ALL+" = "+est.getS_all()+", "
+                        +S_R+" = "+est.getS_r()+", "
+                        +BALCONY+" = "+est.getBalcony()+", "
+                        +YEAR+" = '"+est.getYear()+"' "
                         +" WHERE "+COLUMN_ID+" = "+currentId);
                 //endregion
             } else {
@@ -174,9 +217,31 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         +est.getBalcony()+", "
                         +"'"+est.getYear()+"'"
                         +")");
+                added++;
                 //endregion
             }
             //endregion
+        }
+
+        String message = "Успешно добавлено " + added;
+        if (updated != 0){
+            message = message + " и обновлено " + updated;
+        }
+        message += " записей!";
+        return message;
+        //endregion
+    }
+
+    // метод создан для подстраховки от неверного определения типа ячеек в документе
+    public String getXLSCellValueAsString(Cell cell) {
+        //region
+        CellType cellType = cell.getCellTypeEnum();
+        if (cellType.equals(CellType.STRING)) {
+            return cell.getStringCellValue();
+        } else if (cellType.equals(CellType.NUMERIC)) {
+            return String.valueOf(cell.getNumericCellValue());
+        } else {
+            return "ОШИБКА ОПРЕДЕЛЕНИЯ ТИПА ЯЧЕЙКИ!";
         }
         //endregion
     }
