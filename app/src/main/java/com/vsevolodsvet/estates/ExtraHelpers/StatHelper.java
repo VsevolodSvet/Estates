@@ -42,7 +42,8 @@ public class StatHelper {
         Double result = 0.0;
         for (Double arg : data) result += arg;
         int acc = 1;
-        if (accuracy > 0) for (int i = 1; i > accuracy; i++) acc *= 10;
+        if (accuracy > 0) for (int i = 1; i <= accuracy; i++) acc = acc * 10;
+
         result = Double.valueOf(Math.round((result / data.size())*acc)) / acc;
         return result;
     }
@@ -50,7 +51,7 @@ public class StatHelper {
     public static Double GetMode (List<Double> data, int accuracy) {
         Double result = new Double(0);
         int acc = 1;
-        if (accuracy > 0) for (int i = 1; i > accuracy; i++) acc *= 10;
+        if (accuracy > 0) for (int i = 1; i <= accuracy; i++) acc = acc * 10;
         HashMap<Double, Integer> modeElems = new HashMap<Double, Integer>();
 
         int maxCount = 0;
@@ -65,6 +66,10 @@ public class StatHelper {
                 }
             } else {
                 modeElems.put(listElement, 1);
+                if (maxCount < modeElems.get(listElement)) {
+                    maxCount = modeElems.get(listElement);
+                    result = listElement;
+                }
             }
         }
 
@@ -88,7 +93,7 @@ public class StatHelper {
         }
 
         int acc = 1;
-        if (accuracy > 0) for (int i = 1; i > accuracy; i++) acc *= 10;
+        if (accuracy > 0) for (int i = 1; i <= accuracy; i++) acc = acc * 10;
 
         result = Double.valueOf(Math.round(Math.sqrt(num/data.size()) * acc)) / acc;
 
