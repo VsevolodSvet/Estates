@@ -12,6 +12,8 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
+
 public class ListEstateDialog extends DialogFragment {
 
     @Override
@@ -42,13 +44,19 @@ public class ListEstateDialog extends DialogFragment {
             !Double.isNaN(bundle.getDouble("estateSR"))) {
             message += "<strong>Площадь квартиры: </strong><br>";
             if (!Double.isNaN(bundle.getDouble("estateSLive")) && bundle.getDouble("estateSLive") != 0) {
-                message += "<em>- Жилая - </em>" + bundle.getDouble("estateSLive") + "<br>";
+                message += "<em>- Жилая - </em>" +
+                        BigDecimal.valueOf(bundle.getDouble("estateSLive")).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue()
+                        + "<br>";
             }
             if (!Double.isNaN(bundle.getDouble("estateSAll")) && bundle.getDouble("estateSAll") != 0) {
-                message += "<em>- Общая - </em>" + bundle.getDouble("estateSAll") + "<br>";
+                message += "<em>- Общая - </em>" +
+                        BigDecimal.valueOf(bundle.getDouble("estateSAll")).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue()
+                        + "<br>";
             }
             if (!Double.isNaN(bundle.getDouble("estateSR")) && bundle.getDouble("estateSR") != 0) {
-                message += "<em>- Комнат - </em>" + bundle.getDouble("estateSR") + "<br>";
+                message += "<em>- Комнат - </em>" +
+                        BigDecimal.valueOf(bundle.getDouble("estateSR")).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue()
+                        + "<br>";
             }
             message += "<br>";
         }
@@ -69,10 +77,14 @@ public class ListEstateDialog extends DialogFragment {
         if (!Double.isNaN(bundle.getDouble("estatePriceM")) && !Double.isNaN(bundle.getDouble("estatePriceR"))){
             message += "<h3><strong>Стоимость:</strong></h3>";
             if (!Double.isNaN(bundle.getDouble("estatePriceR")) && bundle.getDouble("estatePriceR") != 0) {
-                message += "<em>- Полная - </em>" + bundle.getDouble("estatePriceR") + " руб.<br>";
+                message += "<em>- Полная - </em>" +
+                        BigDecimal.valueOf(bundle.getDouble("estatePriceR")).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue()
+                        + " руб.<br>";
             }
             if (!Double.isNaN(bundle.getDouble("estatePriceM")) && bundle.getDouble("estatePriceM") != 0) {
-                message += "<em>- За м<sup>2</sup> - </em>" + bundle.getDouble("estatePriceM") + "<br>";
+                message += "<em>- За м<sup>2</sup> - </em>" +
+                        BigDecimal.valueOf(bundle.getDouble("estatePriceM")).setScale(2,BigDecimal.ROUND_HALF_DOWN).doubleValue()
+                        + " руб.<br>";
             }
         }
         //endregion

@@ -14,12 +14,15 @@ import com.vsevolodsvet.estates.Adapters.MainActivityEstateAdapter;
 import com.vsevolodsvet.estates.DB.SQLiteHelper;
 import com.vsevolodsvet.estates.DialogHelpers.ListEstateDialog;
 import com.vsevolodsvet.estates.DialogHelpers.OpenFileDialog;
+import com.vsevolodsvet.estates.DialogHelpers.StatisticsDialog;
+import com.vsevolodsvet.estates.ExtraHelpers.StatHelper;
 import com.vsevolodsvet.estates.Objects.Estate;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -99,7 +102,52 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (item.getItemId() == R.id.action_show_statistics) {
+            StatisticsDialog dialog = new StatisticsDialog();
+            Bundle bundle = new Bundle();
+            List<Estate> estates = dbHelper.getEstates();
+            // задание параметров для диалогового окна
+            //region
+            bundle.putInt("estateCount", estates.size());
+            // подсчет количества объектов по комнатам
+            //region
+            int count1 = 0;
+            int count2 = 0;
+            int count3 = 0;
+            int countMore = 0;
+            int countUndefined = 0;
+            for (Estate estate : estates) {
+                if (estate.getRooms() == null) {
+                    countUndefined++;
+                    continue;
+                }
+                switch (estate.getRooms()) {
+                    case 1 :
+                        count1++;
+                        break;
+                    case 2 :
+                        count2++;
+                        break;
+                    case 3 :
+                        count3++;
+                        break;
+                    default:
+                        countMore++;
+                        break;
+                }
+            }
+            //endregion
+            bundle.putInt("estate1RoomCount", count1);
+            bundle.putInt("estate2RoomCount", count2);
+            bundle.putInt("estate3RoomCount", count3);
+            bundle.putInt("estateMoreRoomCount", countMore);
+            bundle.putInt("estateNoRoomCount", countUndefined);
 
+            HashMap<String, List<Double>> estateRegionMPrices = StatHelper.getRegionPriceMValues(estates);
+            bundle.putSerializable("estateRegionMPrices", estateRegionMPrices);
+            //endregion
+            dialog.setArguments(bundle);
+            dialog.show(getSupportFragmentManager(), dialog.getClass()
+                    .getSimpleName());
         }
 
         return true;
